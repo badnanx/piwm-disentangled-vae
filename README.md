@@ -10,9 +10,9 @@ This repo is the clean, self-contained path from data → trained VAE → using 
 
 ## Interactive demo
 
-[`pose_demo.html`](pose_demo.html) is a self-contained browser demo: open it in any browser and drag the
-x / y / θ sliders to move and rotate the lander. Nothing to install. (On GitHub, download it and open
-locally, or view it live at the GitHub Pages URL if Pages is enabled for this repo.)
+**[Open the live demo](https://badnanx.github.io/piwm-disentangled-vae/pose_demo.html)** and drag the
+x / y / θ sliders to move and rotate the lander. Nothing to install. It is a single self-contained file
+([`pose_demo.html`](pose_demo.html)), so it also works downloaded and opened locally.
 
 ## Results at a glance
 
