@@ -1,0 +1,66 @@
+{
+  "name": "factored_clean_noaug_best",
+  "created": "2026-06-21T15:55:24.045572+00:00",
+  "seed": 0,
+  "sha256": "1ce5ac8bb1404dd4a804a81e523f650b295457ff8c17d7067a115fd39012e5b5",
+  "n_params": 2799925,
+  "metrics": {
+    "epoch": 19,
+    "val_recon": 0.004766742789797718,
+    "ctrl_render": 100,
+    "ctrl_px_x": 101.39310221905356,
+    "ctrl_px_y": 55.094865929597155,
+    "gated": true
+  },
+  "history": {},
+  "versions": {
+    "python": "3.10.12",
+    "numpy": "2.2.6",
+    "torch": "2.12.0+cu130",
+    "cuda": "13.0",
+    "device": "NVIDIA GeForce RTX 3050 Ti Laptop GPU"
+  },
+  "extra": {
+    "config": {
+      "train_files": 345,
+      "val_frac": 0.15,
+      "batch": 32,
+      "latent_dim": 32,
+      "lander_weight": 25.0,
+      "edge_weight": 1.0,
+      "ssim_weight": 0.5,
+      "kl_weight": 0.0001,
+      "state_weight": 1.0,
+      "equiv_weight": 0.0002,
+      "recon_warmup": 0,
+      "equiv_warmup": 8,
+      "per_axis": true,
+      "color_tol": 0.6,
+      "dom_bias": 0.05,
+      "lander_rgb": [
+        0.361,
+        0.294,
+        0.642
+      ],
+      "use_zlander": false,
+      "app_dim": 8,
+      "derotate_lander": false,
+      "feat_weight": 0.0,
+      "theta_equiv_weight": 1.0,
+      "translate_aug_frac": 0.0,
+      "init_ckpt": "/home/aaljoubi/research/piwm/piwm-diffusion-baseline/outputs/pos_equiv_conc_clean_val/model.pth",
+      "lr": 0.001,
+      "grad_clip": 0.3,
+      "ctrl_render_min": 80.0,
+      "ctrl_px_min": 40.0,
+      "patience": 8,
+      "min_epochs": 20,
+      "epochs": 70,
+      "snapshot_every": 6,
+      "save_name": "factored_clean_noaug",
+      "seed": 0,
+      "device": "cuda",
+      "verbose": true
+    }
+  }
+}
