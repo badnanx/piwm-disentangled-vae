@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 
 import config
 import checkpoints
-from zlander_recon_fig import load, build_z          # load(): build the model + load weights
+from zlander_recon_fig import load, encode_frame     # load(): model + weights; encode_frame(): image -> latent
 
 MODEL = "factored_clean_noaug_best"
 OUT_DIR = config.fig_dir("vae")
@@ -56,22 +56,18 @@ def generate_demo(m, dev, scene_z):
 
 def reconstruct_demo(m, dev):
     """Encode a few real test frames and decode them back. Needs the data at PIWM_DATA_ROOT."""
-    import factored_data
     import train_clean_vae as TC
     import sys
     sys.path.insert(0, config.BASELINE_SRC)
     from piwm_model.data import lander_fully_visible
 
     config.set_seed()
-    teI, teC, teS, *_ = TC.preload(config.TEST_DIR, 30)
+    teI, *_ = TC.preload(config.TEST_DIR, 30)
     vis = [k for k in range(len(teI)) if lander_fully_visible(teI[k].permute(1, 2, 0).numpy())]
     idx = np.random.default_rng(config.SEED).choice(vis, size=5, replace=False)
     fr = teI[idx].to(dev).float() / 255.
-    cr = teC[idx].to(dev).float() / 255.
-    stb = teS[idx]
-    scene = torch.stack([factored_data.scene_only(fr[k].cpu())[0] for k in range(len(idx))]).to(dev)
     with torch.no_grad():
-        z = build_z(m, scene, cr, stb, frame=fr)       # x,y read from the image; tilt from the branch
+        z = encode_frame(m, fr)                        # image -> latent, label-free (no state needed)
         rec = m["vae"].decode(z).clamp(0, 1).cpu()
 
     fig, ax = plt.subplots(2, len(idx), figsize=(2.2 * len(idx), 4.4))

@@ -94,10 +94,14 @@ the model classes, so the code in this repo has to travel with them.
 
 ```python
 import torch
-from zlander_recon_fig import load          # run from the repo root, or put it on PYTHONPATH
+from zlander_recon_fig import load, encode_frame   # run from the repo root, or put it on PYTHONPATH
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 m = load("factored_clean_noaug_best", dev)  # builds the VAE + tilt reader, loads the weights
 vae = m["vae"]                              # m["branch"] is the CNN tilt reader
+
+frames = ...                                # your images: (B, 3, 100, 150) float in [0, 1], lander visible
+z = encode_frame(m, frames)                 # image -> latent (label-free; pose read off the image)
+img = vae.decode(z).clamp(0, 1)             # latent -> image
 ```
 
 **Just the decoder, dropped into your own tree:** if you only want to turn a latent into an image and would
@@ -126,9 +130,9 @@ Two things you need to drive it correctly:
 - **Latent layout:** `z[0:2]` = (x, y), `z[2:4]` = (cos θ, sin θ), `z[4:]` = the scene code.
 - **Pose is injected, not encoded.** At inference, x and y are read off the image (the lander's centroid
   mapped to world units) and tilt from the small CNN reader; the encoder itself only produces the scene code.
-  So encoding a real frame is a small pipeline (erase the lander, encode the scene, inject the pose), and that
-  path needs the full repo: see `build_z()` in `zlander_recon_fig.py` and `example_use.py`. Background in
-  `docs/vae_report.pdf` and `docs/TRAINING.md`.
+  `encode_frame()` runs that whole pipeline (erase the lander, encode the scene, inject the pose) in one
+  call, label-free, but it needs the cloned repo, not the minimal copy. `example_use.py` demos both
+  directions. Background in `docs/vae_report.pdf` and `docs/TRAINING.md`.
 
 ## Reproduce and verify
 

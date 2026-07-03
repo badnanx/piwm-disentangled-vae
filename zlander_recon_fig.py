@@ -89,6 +89,30 @@ def build_z(m, scene, crop, st, app_crop=None, frame=None):
     return z
 
 
+@torch.no_grad()
+def encode_frame(m, frame):
+    """The one-call IMAGE -> LATENT path: frames (B, 3, H, W) float in [0, 1] -> z (B, latent_dim).
+    Label-free (no state needed): x and y come from the purple-blob centroid (read_xy), tilt from the
+    branch on a centroid-centred crop, and the scene code from encoding the lander-erased frame. The
+    crop is built exactly as in training (train_clean_vae.preload). Frames must contain a visible
+    lander; raises ValueError otherwise. For the shipped factored model (no appearance head)."""
+    B, _, H, W = frame.shape
+    dev = next(m["vae"].parameters()).device
+    frame = frame.to(dev)
+    crops, scenes = [], []
+    for i in range(B):
+        comp = TC._largest(purple_mask(frame[i].cpu()).numpy())
+        if comp is None:
+            raise ValueError(f"frame {i}: no lander (purple blob) found; cannot read the pose")
+        ys, xs = np.where(comp)
+        cx, cy = xs.mean(), ys.mean()
+        x0 = int(np.clip(round(cx - CROP / 2), 0, W - CROP))
+        y0 = int(np.clip(round(cy - CROP / 2), 0, H - CROP))
+        crops.append(frame[i, :, y0:y0 + CROP, x0:x0 + CROP])
+        scenes.append(factored_data.scene_only(frame[i].cpu())[0])
+    return build_z(m, torch.stack(scenes).to(dev), torch.stack(crops), None, frame=frame)
+
+
 def zoom(img_hwc, mask, half=16):
     if mask.sum() == 0:
         return img_hwc
