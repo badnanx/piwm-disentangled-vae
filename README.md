@@ -6,7 +6,7 @@ the terrain but not the lander. That means the lander's pose can be dialed indep
 be checked on the image it produces rather than trusted blindly.
 
 This repo is the clean, self-contained path from **data → trained VAE → using it**. The full write-up is
-[`vae_report.pdf`](vae_report.pdf).
+[`docs/vae_report.pdf`](docs/vae_report.pdf).
 
 ## ▶ Interactive demo
 
@@ -26,14 +26,14 @@ others:
 ![controllability](figures/factored/crosstalk_xy_factored_clean_noaug.png)
 
 Tilt is controllable to about ±45°; beyond that the lander distorts rather than rotating. Full analysis and
-limitations are in [`vae_report.pdf`](vae_report.pdf).
+limitations are in [`docs/vae_report.pdf`](docs/vae_report.pdf).
 
 ## What's here
 
 ```
 READ THESE
-  vae_report.pdf            the write-up (architecture, training, analysis)
-  TRAINING.md               how the VAE was trained: the 3-stage chain, loss, commands
+  docs/vae_report.pdf       the write-up (architecture, training, analysis)
+  docs/TRAINING.md          how the VAE was trained: the 3-stage chain, loss, commands
   pose_demo.html            interactive slider demo (open in a browser)
   03_vae_and_sincos.ipynb   notebook that explains the VAE and reconstructs test frames
 
@@ -112,8 +112,8 @@ Two things you need to drive it correctly:
 - **Pose is *injected*, not encoded.** At inference, x and y are read off the image (the lander's centroid
   mapped to world units) and tilt from the small CNN reader; the encoder itself only produces the scene code.
   So encoding a real frame is a small pipeline (erase the lander → encode the scene → inject the pose) — see
-  `build_z()` in `zlander_recon_fig.py` and `example_use.py` for the full path. Background in `vae_report.pdf`
-  and `TRAINING.md`.
+  `build_z()` in `zlander_recon_fig.py` and `example_use.py` for the full path. Background in `docs/vae_report.pdf`
+  and `docs/TRAINING.md`.
 
 ## Reproduce and verify
 
@@ -128,7 +128,7 @@ python verify.py factored_reproduce_best   # (reproduce.sh calls this for you)
 A full run takes hours on a laptop GPU; `SMOKE=1 bash reproduce.sh` is a fast end-to-end plumbing check.
 `verify.py` passes when the retrain matches the shipped model — bit-for-bit on the same GPU, or key metrics
 within tolerance on different hardware — and it flags a genuinely broken run. Full details in
-[`TRAINING.md`](TRAINING.md).
+[`docs/TRAINING.md`](docs/TRAINING.md).
 
 To see a reproduction work interactively, rebuild the demo from your checkpoint and drag the sliders:
 

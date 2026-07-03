@@ -55,7 +55,7 @@ inference; stages 1 and 2 encode the full frame and build up to it) takes four s
 Writing a value straight into a pose slot (steps 3 and 4), rather than letting the network produce it, is
 what *injecting* means here; the encoder produces only the scene latent `z[4:]`.
 
-![erase and fill](figures/factored/erase_demo.png)
+![erase and fill](../figures/factored/erase_demo.png)
 
 Decoding is the reverse and never erases anything: the decoder takes the assembled latent and draws the full
 frame at once, the lander (from `z[0:4]`) on the terrain (from `z[4:]`). There is no paste-back step; the
@@ -210,14 +210,14 @@ separate validation split that selected the checkpoint, not a test number.
 per-frame terrain are recovered: the scene latent encodes the terrain, so it changes frame to frame
 (validation-split reconstruction error 0.0048, the selection metric).
 
-![reconstruction](figures/vae/factored_recon.png)
+![reconstruction](../figures/vae/factored_recon.png)
 
 **Position is separated from the other axes.** Commanding one pose axis and measuring all three on the
 decoded frame: dialing x moves the lander about 104 px in x while y drifts only 0.9 px; dialing y moves it
 about 54 px while x drifts 0.7 px; dialing tilt holds x and y within 1.0 px. The unwanted movement on the
 axes not dialed stays within a pixel, so the pose axes are well separated.
 
-![axis separation](figures/factored/crosstalk_xy_factored_clean_noaug.png)
+![axis separation](../figures/factored/crosstalk_xy_factored_clean_noaug.png)
 
 **Moving the lander barely disturbs the scene.** Holding the scene latent fixed and sweeping each pose
 axis, the decoded image changes mostly along the lander's path; the terrain changes only slightly (the
@@ -227,7 +227,7 @@ tilt moves the lander with only a small change to the terrain. The terrain chang
 around the lander's path, so the moving lander itself is excluded from that number. Each panel below is a map
 of where the image changes as that axis is swept (bright = changes, dark = stays put).
 
-![pose vs scene separation](figures/factored/pose_scene_disentangle.png)
+![pose vs scene separation](../figures/factored/pose_scene_disentangle.png)
 
 **A stage comparison isolates what the erase contributes.** Evaluating the stage-2 checkpoint, whose scene latent
 still encodes the full frame with the lander included, against the shipped stage-3 model on the same frames:
