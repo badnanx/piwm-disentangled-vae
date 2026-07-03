@@ -62,7 +62,7 @@ python train_factored_vae.py --init_ckpt outputs/repro_stage2/model.pth \
 ```
 
 Stages 1 and 2 save `model.pth` under `--output_dir`; stage 3 saves `<save_name>_best.pt` under
-`checkpoints/`. Caveat: **the repo ships the final weights, not the intermediate stage checkpoints,** and a
+`checkpoints/`. Caveat: the repo ships the final weights, not the intermediate stage checkpoints, and a
 from-scratch rerun reproduces a *functionally equivalent* model, not the exact shipped bytes (a multi-stage
 GPU run drifts across hardware). `verify.py` is what confirms the rerun landed on the shipped result.
 
@@ -72,26 +72,26 @@ GPU run drifts across hardware). `verify.py` is what confirms the rerun landed o
 python verify.py factored_reproduce_best
 ```
 
-Two levels. On the **same GPU and library stack**, the `.pt` SHA-256 matches the shipped reference exactly
-(bit-for-bit PASS). On **different hardware**, exact bits differ, so the training metrics (validation
+Two levels. On the same GPU and library stack, the `.pt` SHA-256 matches the shipped reference exactly
+(bit-for-bit PASS). On different hardware, exact bits differ, so the training metrics (validation
 reconstruction, position controllability in px, render rate) are compared to the reference within tolerance.
-Because the team runs on the **same data**, a correct rerun lands well within tolerance even on a different
+Because the team runs on the same data, a correct rerun lands well within tolerance even on a different
 GPU. `verify.py` exits non-zero on failure and does flag a genuinely broken run: an under-trained model
 fails the metric check rather than passing silently.
 
 ## Data decisions
 
-- **Filtering:** training uses the fully-visible frames, applied **automatically at load time** by
+- **Filtering:** training uses the fully-visible frames, applied automatically at load time by
   `lander_fully_visible` inside the `preload` functions, so there is no separate filtering step to run: the
   same raw episodes produce the same filtered set. The split is by episode (345 train / 55 test), verified
   disjoint, and carved the same way in every stage via `checkpoints.canonical_file_split` (seed 0).
 - **Augmentation: none, and only position was ever tested.** Two augmentation ideas exist; neither is in
   the shipped model, and they differ in how far they were taken:
   - **Rotation augmentation**: demonstrated as a capability and used elsewhere to train the tilt
-    *reader* full-circle, but **never applied to train any decoder here**. The decoder's ±45° tilt cap is
+    *reader* full-circle, but never applied to train any decoder here. The decoder's ±45° tilt cap is
     just real-data scarcity (large tilts are rare); rotation augmentation of the decoder was not tried.
   - **Translate (position) augmentation**: relocating the lander across the frame to give the decoder crisp
     off-centre targets. This was A/B tested against a no-augmentation run
-    and showed **no meaningful improvement** (it did not sharpen off-centre landers, and the no-aug run had
+    and showed no meaningful improvement (it did not sharpen off-centre landers, and the no-aug run had
     cleaner legs in the central band), so the shipped model is no-aug. The translate-augmentation code has
     been removed from the trainer.
