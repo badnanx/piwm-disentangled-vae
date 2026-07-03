@@ -1,7 +1,7 @@
 # Factored VAE for Lunar Lander
 
 A small, physically interpretable VAE for Gymnasium Lunar Lander images. Its latent is split into a
-physical pose part the you set directly (the lander's x, y, and tilt) and a scene code that carries
+physical pose part you set directly (the lander's x, y, and tilt) and a scene code that carries
 the terrain but not the lander. That means the lander's pose can be dialed independently, and the model can
 be checked on the image it produces rather than trusted blindly.
 
@@ -49,7 +49,7 @@ THE CODE
   train_position_equiv.py     stage 2 trainer (position control)
   train_factored_vae.py       stage 3 trainer (the shipped, factored model)
   train_clean_vae.py  factored_data.py  zlander_recon_fig.py   model + data loaders
-  config.py  checkpoints.py  controllability.py  geom_theta.py   supporting code
+  config.py  checkpoints.py  controllability.py  geom_theta.py  lander_app.py   supporting code
   piwm_model/                 the model, mask, and data helpers (see Attribution)
 
 DATA
@@ -87,35 +87,47 @@ python example_use.py
 
 ### Use the shipped weights in your own project
 
-The `.pt` file alone is not loadable: you need the model class (`PiwmConvVAE`), so take the *code* too,
-not just the weights. Either clone this repo and import from it, or copy into your project:
-`checkpoints/factored_clean_noaug_best.pt` + `.json`, the `piwm_model/` package, and `config.py`,
-`checkpoints.py`, `zlander_recon_fig.py`. Then:
+The `.pt` holds the weights, not the model class, so the code in this repo has to travel with them.
+
+**Simplest: clone this repo** and load with one call. Everything the loader needs is already present:
 
 ```python
-import torch, math
-from zlander_recon_fig import load                 # run from the repo root (or with it on PYTHONPATH)
+import torch
+from zlander_recon_fig import load          # run from the repo root, or put it on PYTHONPATH
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-m = load("factored_clean_noaug_best", dev)         # builds PiwmConvVAE + the tilt reader, loads the weights
-vae = m["vae"]
+m = load("factored_clean_noaug_best", dev)  # builds the VAE + tilt reader, loads the weights
+vae = m["vae"]                              # m["branch"] is the CNN tilt reader
+```
+
+**Just the decoder, dropped into your own tree:** if you only want to turn a latent into an image and would
+rather not carry the whole repo, copy three things: the `piwm_model/` package, `checkpoints.py`, and
+`config.py`, plus `checkpoints/factored_clean_noaug_best.pt` and its `.json`. Then load the VAE directly:
+
+```python
+import torch, math, checkpoints
+from piwm_model.autoencoder import PiwmConvVAE
+sd, manifest = checkpoints.load_checkpoint("factored_clean_noaug_best")
+vae = PiwmConvVAE(manifest["extra"]["config"]["latent_dim"])
+vae.load_state_dict({k[4:]: v for k, v in sd.items() if k.startswith("vae.")})
+vae.eval()
 
 # GENERATE from a chosen pose (x, y, tilt): build the 32-dim latent, then decode
-z = torch.zeros(1, 32, device=dev)
-z[0, 0], z[0, 1] = 0.0, 0.6                         # x, y  (world units)
-z[0, 2] = math.cos(math.radians(20))               # tilt = 20 degrees, stored as (cos, sin)
+z = torch.zeros(1, 32)
+z[0, 0], z[0, 1] = 0.0, 0.6                  # x, y  (world units)
+z[0, 2] = math.cos(math.radians(20))         # tilt = 20 degrees, stored as (cos, sin)
 z[0, 3] = math.sin(math.radians(20))
 # z[0, 4:] is the scene code (terrain): zeros gives a generic scene,
 # or copy z[4:] from encoding a real frame to reuse that frame's terrain.
-img = vae.decode(z)[0].clamp(0, 1)                 # (3, 100, 150) image, values in [0, 1]
+img = vae.decode(z)[0].clamp(0, 1)           # (3, 100, 150) image, values in [0, 1]
 ```
 
 Two things you need to drive it correctly:
 - **Latent layout:** `z[0:2]` = (x, y), `z[2:4]` = (cos θ, sin θ), `z[4:]` = the scene code.
-- **Pose is *injected*, not encoded.** At inference, x and y are read off the image (the lander's centroid
+- **Pose is injected, not encoded.** At inference, x and y are read off the image (the lander's centroid
   mapped to world units) and tilt from the small CNN reader; the encoder itself only produces the scene code.
-  So encoding a real frame is a small pipeline (erase the lander → encode the scene → inject the pose). See
-  `build_z()` in `zlander_recon_fig.py` and `example_use.py` for the full path. Background in `docs/vae_report.pdf`
-  and `docs/TRAINING.md`.
+  So encoding a real frame is a small pipeline (erase the lander, encode the scene, inject the pose), and that
+  path needs the full repo: see `build_z()` in `zlander_recon_fig.py` and `example_use.py`. Background in
+  `docs/vae_report.pdf` and `docs/TRAINING.md`.
 
 ## Reproduce and verify
 
