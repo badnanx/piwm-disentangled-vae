@@ -199,7 +199,8 @@ def theta_err_deg(branch, C_, S_, device):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--data_root", default="../data/lunar/extracted/lunar")
+    p.add_argument("--data_root", default=os.environ.get(
+        "PIWM_DATA_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "lunar")))
     p.add_argument("--output_dir", default="outputs/theta_branch_smoke")
     p.add_argument("--train_files", type=int, default=40)
     p.add_argument("--test_files", type=int, default=10)

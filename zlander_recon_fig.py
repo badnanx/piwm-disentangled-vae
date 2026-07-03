@@ -1,7 +1,16 @@
-"""Eyeball a z_lander VAE against the report's two demands: (1) is the lander CRISP (silhouette/legs) vs the
-factored_staged blob, and (2) is the appearance code actually USED — i.e. does the decoder RENDER from it or
-just PASTE a fixed template? (the report's untested render-vs-paste limitation, which is also the
-transferability crux).
+"""Model loading and the image<->latent API, plus a diagnostic figure.
+
+This file hosts the three functions the README and example_use.py build on:
+    load(name, dev)        -> {"vae": PiwmConvVAE, "branch": ThetaBranch, ...}  (weights loaded, eval mode)
+    encode_frame(m, frames)-> z   the one-call, label-free image -> latent path
+    build_z(m, ...)        -> z   the underlying latent assembly (scene encode + pose injection)
+
+The rest of the file (main()) renders a research comparison figure and expects research checkpoints
+that are NOT shipped in this repo; import the functions above rather than running the file directly.
+Original figure purpose: eyeball a z_lander VAE on two demands: (1) is the lander CRISP
+(silhouette/legs) vs the factored_staged blob, and (2) is the appearance code actually USED, i.e.
+does the decoder RENDER from it or just PASTE a fixed template? (the render-vs-paste limitation,
+which is also the transferability crux).
 
 Top block: rows = REAL / factored_staged (blob baseline) / zlander, over seeded-random representative frames
 sorted by θ; a zoomed lander strip makes 15px crispness judgeable.

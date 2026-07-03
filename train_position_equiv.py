@@ -207,7 +207,8 @@ def position_control_px(vae, branch, F_, C_, device, n_base=5):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--data_root", default="../data/lunar/extracted/lunar")
+    p.add_argument("--data_root", default=os.environ.get(
+        "PIWM_DATA_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "lunar")))
     p.add_argument("--output_dir", default="outputs/pos_equiv_smoke")
     p.add_argument("--init_ckpt", default="", help="warm-start theta-branch model")
     p.add_argument("--train_files", type=int, default=40)

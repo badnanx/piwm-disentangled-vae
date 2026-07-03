@@ -87,8 +87,22 @@ python example_use.py
 
 ### Use the shipped weights in your own project
 
-One `.pt` ships all of it: the VAE (encoder and decoder) and the CNN tilt reader. It holds the weights, not
-the model classes, so the code in this repo has to travel with them.
+One `.pt` ships all of it: the VAE (encoder and decoder) and the CNN tilt reader.
+
+**Why it isn't just "load the .pt":** a PyTorch `.pt` stores only the trained numbers (weight tensors keyed
+by layer name), not the network itself. The network is Python code, so a little code travels with the
+weights, each piece with one job:
+
+- `piwm_model/` defines the network (`PiwmConvVAE`) that the weights are loaded into.
+- `checkpoints.py` reads the checkpoint format and verifies the `.pt` against its manifest (SHA-256).
+- `checkpoints/factored_clean_noaug_best.json` is that manifest: the architecture settings (latent size,
+  training config) and the training metrics, so the model is rebuilt exactly as trained and `verify.py`
+  has a reference.
+- `config.py` holds the shared paths and seed.
+
+That set is enough to decode (latent in, image out). Going the other way, image in, latent out, also needs
+the pose-reading pipeline (lander mask, crop, tilt reader), which is the rest of the repo. Hence the two
+options below.
 
 **Simplest: clone this repo** and load with one call. Everything the loader needs is already present:
 
@@ -136,7 +150,7 @@ Two things you need to drive it correctly:
 
 ## Reproduce and verify
 
-With `PIWM_DATA_ROOT` set:
+With data present (either way from The data above):
 
 ```bash
 bash reproduce.sh                     # trains stage 1 -> 2 -> 3 from scratch, then verifies

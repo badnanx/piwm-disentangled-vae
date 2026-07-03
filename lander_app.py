@@ -1,5 +1,9 @@
 """z_lander: a position-free APPEARANCE code for the lander (the lever for crispness + θ readability).
 
+NOTE: the SHIPPED model (factored_clean_noaug) does NOT use this — it has no appearance head. This file
+is kept because the loader in zlander_recon_fig.py supports checkpoints that do have one. The rest of
+this docstring documents the appearance-code design for such models.
+
 The factored VAE draws the lander from only 4 numbers (x, y, cosθ, sinθ) = pure pose, with zero shape
 bandwidth, so the decoder paints the MEAN lander = a soft blob. z_lander adds a few latent dims carrying
 the lander's APPEARANCE (silhouette / legs), encoded from the CENTERED lander crop and injected into the
