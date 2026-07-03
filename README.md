@@ -87,7 +87,8 @@ python example_use.py
 
 ### Use the shipped weights in your own project
 
-The `.pt` holds the weights, not the model class, so the code in this repo has to travel with them.
+One `.pt` ships all of it: the VAE (encoder and decoder) and the CNN tilt reader. It holds the weights, not
+the model classes, so the code in this repo has to travel with them.
 
 **Simplest: clone this repo** and load with one call. Everything the loader needs is already present:
 
