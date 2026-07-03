@@ -93,14 +93,20 @@ not just the weights. Either clone this repo and import from it, or copy into yo
 `checkpoints.py`, `zlander_recon_fig.py`. Then:
 
 ```python
-import torch
-from zlander_recon_fig import load
+import torch, math
+from zlander_recon_fig import load                 # run from the repo root (or with it on PYTHONPATH)
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-m = load("factored_clean_noaug_best", dev)   # builds PiwmConvVAE + the tilt reader, loads the weights
+m = load("factored_clean_noaug_best", dev)         # builds PiwmConvVAE + the tilt reader, loads the weights
 vae = m["vae"]
 
-# GENERATE from a pose: assemble a 32-dim latent z and decode
-img = vae.decode(z)          # z: (B, 32)  ->  image (B, 3, 100, 150), values in [0, 1]
+# GENERATE from a chosen pose (x, y, tilt): build the 32-dim latent, then decode
+z = torch.zeros(1, 32, device=dev)
+z[0, 0], z[0, 1] = 0.0, 0.6                         # x, y  (world units)
+z[0, 2] = math.cos(math.radians(20))               # tilt = 20 degrees, stored as (cos, sin)
+z[0, 3] = math.sin(math.radians(20))
+# z[0, 4:] is the scene code (terrain): zeros gives a generic scene,
+# or copy z[4:] from encoding a real frame to reuse that frame's terrain.
+img = vae.decode(z)[0].clamp(0, 1)                 # (3, 100, 150) image, values in [0, 1]
 ```
 
 Two things you need to drive it correctly:
