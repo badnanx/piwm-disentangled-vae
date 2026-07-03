@@ -28,7 +28,7 @@ cd "$(dirname "$0")"
 export PYTHONPATH="$PWD"
 PY="${PYTHON:-python}"
 SEED=0
-DATA_ROOT="${PIWM_DATA_ROOT:-$PWD/../data/lunar/extracted/lunar}"
+DATA_ROOT="${PIWM_DATA_ROOT:-$PWD/data/lunar}"    # default = where generate_data.py writes
 
 if [ "${SMOKE:-0}" != "0" ]; then
   echo ">>> SMOKE run: tiny settings, pipeline plumbing check only (metrics will NOT reproduce)."

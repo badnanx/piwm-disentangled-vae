@@ -13,8 +13,8 @@ Reproducibility is checked at two levels (see checkpoints.py for the philosophy)
      different machine.
 
 Usage:
-    python verify.py                       # self-check the shipped checkpoint (should be bit-identical)
-    python verify.py factored_reproduce    # compare a retrained checkpoint against the shipped reference
+    python verify.py                            # self-check the shipped checkpoint (should be bit-identical)
+    python verify.py factored_reproduce_best    # compare a retrained checkpoint against the shipped reference
 
 Exit code is 0 on PASS, 1 on FAIL, so it can gate a CI / script.
 """

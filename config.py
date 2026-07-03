@@ -1,4 +1,4 @@
-"""Shared config for the bulletproof PIWM VAE+diffusion report.
+"""Shared config for the factored Lunar Lander VAE.
 
 Single source of truth for paths and the global random seed so every notebook
 and script is reproducible. Override DATA_ROOT via the PIWM_DATA_ROOT env var.
@@ -8,22 +8,21 @@ import random
 
 SEED = 0
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+
 # Data: Gymnasium LunarLander-v3, discrete actions, default config (no wind).
-# Episodes as .npz (keys: imgs, acts, states, noisy_states_*).
+# Episodes as .npz (keys: imgs, acts, states, noisy_states_*). The default is
+# where generate_data.py writes; point PIWM_DATA_ROOT at your copy otherwise.
 ENV_ID = "LunarLander-v3"
-DATA_ROOT = os.environ.get(
-    "PIWM_DATA_ROOT", "/home/aaljoubi/research/piwm/data/lunar/extracted/lunar")
+DATA_ROOT = os.environ.get("PIWM_DATA_ROOT", os.path.join(HERE, "data", "lunar"))
 TRAIN_DIR = os.path.join(DATA_ROOT, "lunartrain")
 TEST_DIR = os.path.join(DATA_ROOT, "lunartest")
-
-HERE = os.path.dirname(os.path.abspath(__file__))
 
 # Model/data helpers are VENDORED into this repo as the `piwm_model` package
 # (sprite/data/autoencoder/...), so the repo is standalone. Scripts do
 # `sys.path.insert(0, config.BASELINE_SRC); from piwm_model... import ...`;
-# pointing BASELINE_SRC at the repo root makes that resolve to the local copy.
-# BASELINE_SCRIPTS likewise points at the repo root, where the two vendored helper
-# scripts (regressor_theta_check.py, prove_sincos_theta.py) live.
+# pointing BASELINE_SRC (and BASELINE_SCRIPTS) at the repo root makes that
+# resolve to the local copy.
 BASELINE_SRC = HERE
 BASELINE_SCRIPTS = HERE
 

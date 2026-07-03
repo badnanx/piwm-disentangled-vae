@@ -1,10 +1,10 @@
 """Regenerate equivalent Lunar Lander episodes from the open Gymnasium environment.
 
 The dataset was HANDED TO US (collected by the team; it was not generated in this project) and is not
-redistributed here. The team and the PI reproduce the notebooks exactly by pointing PIWM_DATA_ROOT at that
-dataset. This script lets anyone else regenerate FUNCTIONALLY equivalent data (same format, same physics, a
-similar pose distribution) from the open environment, so the notebooks can be re-run. Numbers will be close
-but not bit-identical to the shipped figures, because the episodes differ.
+redistributed here. The team reproduces the results exactly by pointing PIWM_DATA_ROOT at that dataset.
+This script lets anyone else regenerate FUNCTIONALLY equivalent data (same format, same physics, a
+similar pose distribution) from the open environment, so everything here can be re-run. Numbers will be
+close but not bit-identical to the shipped figures, because the episodes differ.
 
 How the originals were made is INFERRED, not known: our data characterization found an almost perfectly
 UNIFORM distribution over the four discrete actions (plus a wide, uncontrolled pose spread) — the signature
@@ -18,7 +18,7 @@ Format produced per episode (matches the originals):
 Requires Box2D:  pip install "gymnasium[box2d]"
 Usage:
     python generate_data.py --n_train 345 --n_test 55 --out ./data/lunar
-    PIWM_DATA_ROOT=./data/lunar python build_notebook.py     # then re-run any notebook
+    python example_use.py        # ./data/lunar is the default data root; no env var needed
 """
 import argparse
 import os
@@ -97,7 +97,7 @@ def main():
     write_split(env, rng, a.n_train, os.path.join(a.out, "lunartrain"), a.policy)
     write_split(env, np.random.default_rng(a.seed + 1), a.n_test, os.path.join(a.out, "lunartest"), a.policy)
     env.close()
-    print(f"done. set PIWM_DATA_ROOT={a.out} to run the notebooks against this data.", flush=True)
+    print(f"done. data at {a.out} (./data/lunar is the default root; otherwise set PIWM_DATA_ROOT={a.out}).", flush=True)
 
 
 if __name__ == "__main__":

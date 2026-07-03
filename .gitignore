@@ -12,7 +12,10 @@ cache/
 figures/_*.png
 figures/*smoke*
 
-# the curated weights in checkpoints/ and mrinall_autoencoder/ ARE tracked on purpose
+# the curated weights in checkpoints/ ARE tracked on purpose
+
+# regenerated data (generate_data.py default output)
+data/
 
 # example_use.py demo outputs (regenerated on run)
 figures/vae/example_*.png

@@ -74,8 +74,8 @@ against:
   training code filters to fully-visible frames and carves the validation split by itself, so the same raw
   episodes give the same training set.
 - **You don't have it (anyone else):** `pip install "gymnasium[box2d]"`, then
-  `python generate_data.py --n_train 345 --n_test 55 --out ./data/lunar` and set
-  `PIWM_DATA_ROOT=./data/lunar`. This makes the same folder structure with random-action episodes.
+  `python generate_data.py --n_train 345 --n_test 55 --out ./data/lunar`. This makes the same folder
+  structure with random-action episodes, at the default data root (so no env var needed).
 
 ## Use it
 

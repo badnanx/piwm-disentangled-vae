@@ -48,7 +48,7 @@
       "feat_weight": 0.0,
       "theta_equiv_weight": 1.0,
       "translate_aug_frac": 0.0,
-      "init_ckpt": "/home/aaljoubi/research/piwm/piwm-diffusion-baseline/outputs/pos_equiv_conc_clean_val/model.pth",
+      "init_ckpt": "outputs/pos_equiv_conc_clean_val/model.pth",
       "lr": 0.001,
       "grad_clip": 0.3,
       "ctrl_render_min": 80.0,
