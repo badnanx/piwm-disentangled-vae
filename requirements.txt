@@ -1,16 +1,16 @@
-# Runtime for the notebooks (versions from the environment the figures were rendered in).
+# Runtime for the scripts and the notebook (versions from the environment the shipped
+# figures and checkpoints were produced in).
 torch==2.12.0
 numpy==2.2.6
 scipy==1.15.3
 matplotlib==3.10.9
 Pillow==12.2.0
 
-# Notebook build/execute
+# Only needed to re-execute 03_vae_and_sincos.ipynb (not needed to run the scripts):
 nbclient==0.11.0
 nbformat==5.10.4
 ipykernel==7.3.0
-ipywidgets==8.1.8        # the interactive pose slider (interactive_pose_demo.ipynb)
 
-# Only needed to REGENERATE data with generate_data.py (not needed to run the notebooks
-# against an existing dataset):
+# Only needed to REGENERATE data with generate_data.py (not needed to run against an
+# existing dataset):
 #   gymnasium[box2d]==1.0.0
