@@ -83,11 +83,37 @@ uses random actions as the best reconstruction. Regenerated data is functionally
 
 ## Use it
 
+**Just run it** (fastest way to see it work — reconstruct real frames + generate from a chosen pose):
+
 ```bash
-python example_use.py     # loads the shipped VAE, reconstructs real frames, and generates from a chosen pose
+python example_use.py
 ```
 
-The latent is 32 numbers: `z[0:2]` = (x, y), `z[2:4]` = (cos θ, sin θ), `z[4:]` = the scene code.
+### Use the shipped weights in your own project
+
+The `.pt` file alone is **not loadable** — you need the model class (`PiwmConvVAE`), so take the *code* too,
+not just the weights. Either **clone this repo and import from it**, or **copy into your project**:
+`checkpoints/factored_clean_noaug_best.pt` + `.json`, the `piwm_model/` package, and `config.py`,
+`checkpoints.py`, `zlander_recon_fig.py`. Then:
+
+```python
+import torch
+from zlander_recon_fig import load
+dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+m = load("factored_clean_noaug_best", dev)   # builds PiwmConvVAE + the tilt reader, loads the weights
+vae = m["vae"]
+
+# GENERATE from a pose: assemble a 32-dim latent z and decode
+img = vae.decode(z)          # z: (B, 32)  ->  image (B, 3, 100, 150), values in [0, 1]
+```
+
+Two things you need to drive it correctly:
+- **Latent layout:** `z[0:2]` = (x, y), `z[2:4]` = (cos θ, sin θ), `z[4:]` = the scene code.
+- **Pose is *injected*, not encoded.** At inference, x and y are read off the image (the lander's centroid
+  mapped to world units) and tilt from the small CNN reader; the encoder itself only produces the scene code.
+  So encoding a real frame is a small pipeline (erase the lander → encode the scene → inject the pose) — see
+  `build_z()` in `zlander_recon_fig.py` and `example_use.py` for the full path. Background in `vae_report.pdf`
+  and `TRAINING.md`.
 
 ## Reproduce and verify
 
