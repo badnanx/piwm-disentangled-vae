@@ -120,13 +120,12 @@ def controllability_report(vae, geom_reader, device, base_images, n_base=12):
 
 
 if __name__ == "__main__":
-    # Stub test: exercise the sweeps end-to-end against a throwaway tiny VAE on CPU.
+    # Smoke test: run the sweeps end-to-end against the SHIPPED model (needs the data).
     import glob
-    import train_cycle_vae
     from piwm_model.data import lander_fully_visible
-    cfg = train_cycle_vae.CycleVAEConfig(train_files=6, epochs=2, cycle_warmup=1, device="cpu")
-    vae = train_cycle_vae.PiwmConvVAE(latent_dim=32)
-    vae.load_state_dict(train_cycle_vae.train_cycle_vae(cfg)["state_dict"])
+    from zlander_recon_fig import load
+    dev = "cuda" if torch.cuda.is_available() else "cpu"
+    vae = load("factored_clean_noaug_best", torch.device(dev))["vae"]
 
     imgs = []
     for p in sorted(glob.glob(os.path.join(config.TEST_DIR, "*.npz")))[:4]:
@@ -136,7 +135,7 @@ if __name__ == "__main__":
                     imgs.append(d["imgs"][t])
     base = torch.from_numpy(np.stack(imgs[:12])).permute(0, 3, 1, 2).float() / 255.0
     reader, _ = geom_theta.calibrate_on_real(train_files=20, max_files_eval=8)
-    rep = controllability_report(vae, reader, "cpu", base)
+    rep = controllability_report(vae, reader, dev, base)
     for k in ("x", "y", "theta"):
         print(f"{k:>5}: fit={rep[k]['fit']}  grid={tuple(rep[k]['grid'].shape)}")
-    print("STUB OK — sweeps run (a 2-epoch toy won't show real control)")
+    print("OK — sweeps ran against the shipped model")
