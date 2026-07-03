@@ -66,8 +66,8 @@ python3.10 -m venv .venv
 
 ## The data
 
-The dataset was **handed to us** (collected by the team; not generated in this project), so two ways to get
-data to run against:
+The dataset was **provided by the team** (not generated in this project), so two ways to get data to run
+against:
 
 - **You have the dataset (the team / PI):** set `PIWM_DATA_ROOT` to a folder containing `lunartrain/` and
   `lunartest/` of `<i>.npz` episodes (keys `imgs`, `acts`, `states`). **No manual filtering needed** — the
@@ -77,7 +77,7 @@ data to run against:
   `python generate_data.py --n_train 345 --n_test 55 --out ./data/lunar` and set
   `PIWM_DATA_ROOT=./data/lunar`. This makes the same folder structure with **random-action** episodes.
 
-*How the originals were made is inferred, not known: our data characterization found an almost perfectly
+*How the originals were made is inferred, not known: the data characterization found an almost perfectly
 uniform distribution over the four discrete actions (the signature of a random policy), so `generate_data.py`
 uses random actions as the best reconstruction. Regenerated data is functionally equivalent, not identical.*
 
