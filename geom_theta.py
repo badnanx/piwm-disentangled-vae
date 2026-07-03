@@ -3,10 +3,10 @@
 Reads lander tilt straight from its purple segmentation mask: no network, so no
 train/test domain shift. It works identically on REAL and DECODED frames (it's a
 function of pixels, not of a learned distribution), which makes it the independent
-cross-check the CNN reader needs — and it doubles as the S() extractor the
-constraint checker C() will use.
+cross-check the CNN reader needs — and, being transparent, a natural way to read
+a physical quantity straight off a generated image for downstream checking.
 
-Method (PIWM_IDEAS_AND_PLANS.md 4.6):
+Method:
   axis : principal axis from the mask's 2nd-order central moments (= PCA of the
          pixel cloud). Gives the tilt line but with a 180-degree (head/feet)
          ambiguity an ellipse can't resolve.
@@ -19,7 +19,7 @@ Tilt-sign convention (verified): upright = 0; +theta = CCW = top/head leans LEFT
 head-tilts-right = negative. Implemented as theta = atan2(-hx, hy) with the head
 unit vector (hx, hy) in MATH coords (x right, y UP).
 
-Two discrete choices remain open (noted in the plan): is the head/feet axis the
+Two discrete choices remain open: is the head/feet axis the
 MAJOR or MINOR principal axis, and does the head sit on the +skew or -skew side?
 Rather than guess, `GeomThetaReader.calibrate()` picks the combo that best matches
 ground-truth theta on real crops (where theta is known) — the same "validate the

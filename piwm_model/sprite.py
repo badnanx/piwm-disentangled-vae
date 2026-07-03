@@ -1,4 +1,4 @@
-"""Sprite extraction and compositing utilities for SegmentVAE pipeline.
+"""Lander sprite extraction, masking, and compositing utilities.
 
 Uses the purple lander color mask (blue channel dominant) only — not fire/flame.
 This means we only erase and replace the lander body, leaving flame pixels

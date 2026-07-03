@@ -1,6 +1,6 @@
-"""Cached-checkpoint pattern for the report's trainable models (NB03+).
+"""Cached-checkpoint pattern for this repo's trainable models.
 
-Goal: a notebook trains the REAL model once, then every rerun is instant. A
+Goal: train the REAL model once, then every rerun is instant. A
 RETRAIN switch decides between two paths:
   - LOAD    : read finished weights + manifest (instant). The default once weights
               exist, so a stranger who clones the repo runs the notebook in seconds.
@@ -200,11 +200,10 @@ def load_or_train(name, train_fn, *, retrain=None, tol=None, map_location="cpu")
 
 if __name__ == "__main__":
     # Smoke test: determinism, episode split disjointness, save/load round-trip.
-    import analysis
     enable_determinism()
-    D = analysis.load_split(config.TRAIN_DIR)
-    tr, va = episode_val_split(D["ep_id"], val_frac=0.15)
-    tr_eps, va_eps = set(D["ep_id"][tr]), set(D["ep_id"][va])
+    ep_id = np.repeat(np.arange(20), 30)          # 20 synthetic episodes x 30 frames
+    tr, va = episode_val_split(ep_id, val_frac=0.15)
+    tr_eps, va_eps = set(ep_id[tr]), set(ep_id[va])
     print(f"episode val split: {tr.sum()} train / {va.sum()} val frames; "
           f"{len(tr_eps)}/{len(va_eps)} episodes; overlap={len(tr_eps & va_eps)}")
     assert not (tr_eps & va_eps), "val split leaks episodes into train!"

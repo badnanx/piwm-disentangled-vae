@@ -1,7 +1,7 @@
 """Unified clean-from-scratch PIWM VAE — FAITHFUL reproduction of the baseline
 (theta_branch + position-equivariance) in ONE run, with 3 documented deltas.
 
-Reproduces (carried from baseline, see SPEC.md):
+Reproduces (carried from the baseline; the shipped chain is documented in docs/TRAINING.md):
   arch    PiwmConvVAE + ThetaBranch (θ from a purple-centroid 24x24 crop)
   recon   weighted_mse + edge_weight*gradient_loss + ssim_weight*ssim_loss   <-- (I had dropped edge+ssim)
   state   xy_loss + theta_loss (state_weight)         kl   on scene latent z[4:]

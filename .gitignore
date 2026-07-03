@@ -17,5 +17,10 @@ figures/*smoke*
 # regenerated data (generate_data.py default output)
 data/
 
+# artifacts of reproduce.sh / retraining (the shipped reference stays tracked)
+checkpoints/factored_reproduce*
+checkpoints/scene_train_*
+outputs/
+
 # example_use.py demo outputs (regenerated on run)
 figures/vae/example_*.png

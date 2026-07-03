@@ -9,12 +9,13 @@ class PiwmConvVAE(nn.Module):
     """
     Small Lunar Lander VAE with PIWM-style physical latent slots.
 
-    If state_indices=[0, 1, 4], training can supervise:
-      mu[:, 0] ~= x
-      mu[:, 1] ~= y
-      mu[:, 2] ~= theta
-
-    Remaining dimensions are residual visual latents used by the decoder.
+    The class is generic: the first k latent dims can be supervised against physical
+    state and the rest are free visual dims. The SHIPPED factored model
+    (factored_clean_noaug) uses it with latent_dim=32 and the convention
+      z[0:2] = (x, y)  world units, injected at inference
+      z[2:4] = (cos theta, sin theta)  from the tilt reader
+      z[4:]  = scene code (terrain; encoded from the lander-erased frame)
+    See the README's latent-layout note.
     """
 
     def __init__(self, latent_dim: int = 64) -> None:

@@ -4,15 +4,15 @@ see TRAINING.md). Warm-starts from stage 2 and factors the scene out of the land
 Factored VAE (#2): the scene-latent encoder sees the LANDER-MASKED (scene-only) frame, so pose CANNOT
 leak into the scene latent. The lander is drawn from INJECTED physical dims (x, y from labels/control; θ
 from the crop-branch). Hypothesis: commanding a new pose then stays CLEAN (no haze), because the scene
-scene latent no longer conflicts with the commanded lander position — fixing the entanglement that
-[[finding-target-pose-proof]] exposed.
+latent no longer conflicts with the commanded lander position — fixing the pose-scene entanglement the
+earlier target-pose experiments exposed (commanding a far position dragged scene content along).
 
 Latent layout: z0=x (injected), z1=y (injected), z2:4=branch(crop)=(cosθ,sinθ), z4:=scene latent (from the
 scene-only encoder). Decoder reconstructs the FULL frame. Controllability is by CONSTRUCTION (the only
 lander-position information is the injected physical dims), so this DROPS the swap-equivariance /
 gated-selection machinery of train_clean_vae — selection is just best val-recon + early stopping.
 
-Success test (run after): prove_target_pose / pose_demo in 'factored' mode -> far-position haze should
+Success test (run after): the controllability sweep / pose demo -> far-position haze should
 drop toward the realism floor, and the IN-RANGE (clean) region for x/y should widen.
 """
 import argparse
